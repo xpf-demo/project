@@ -1,0 +1,44 @@
+Map学习体系：  
+ ---| Map  接口    将键映射到值的对象。一个映射不能包含重复的键；每个键最多只能映射到一个值。  
+            ---| HashMap  采用哈希表实现，所以无序  
+            ---| TreeMap   可以对健进行排序  
+  
+---|Hashtable:  
+底层是哈希表数据结构，线程是同步的，不可以存入null键，null值。  
+效率较低，被HashMap 替代。  
+
+
+---|HashMap:  
+特点：底层是哈希表数据结构 。保存元素时先进后出、无序性；查询效率比较高；key-value可以为null，但最多只能为一个null；
+要保证键的唯一性，需要覆盖hashCode方法，和equals方法。  
+不支持线程同步，即可以有多个线程同时写HashMap，可能导致数据不一致，如果需要同步可以使用Collection的synchronizedMap方法使其同步。
+
+
+---| LinkedHashMap：  
+该子类基于哈希表又融入了链表。可以Map集合进行增删提高效率。
+LinkedHashMap内部是双向链表结构，保存了元素插入的顺序，Iterator遍历元素时按照插入的顺序排列，支持线程同步。  
+
+
+---|TreeMap:  
+特点：保存元素key-value不能为null，允许key-value重复；遍历元素时随机排列。
+底层是二叉树数据结构。可以对map集合中的键进行排序。需要使用Comparable或者Comparator 进行比较排序。return 0，来判断键的唯一性。 
+
+
+
+ConcurrentHashMap：
+当你程序需要高度的并行化的时候，你应该使用ConcurrentHashMap
+尽管没有同步整个Map，但是它仍然是线程安全的
+读操作非常快，而写操作则是通过加锁完成的
+在对象层次上不存在锁（即不会阻塞线程）
+锁的粒度设置的非常好，只对哈希表的某一个key加锁
+ConcurrentHashMap不会抛出ConcurrentModificationException，即使一个线程在遍历的同时，另一个线程尝试进行修改。
+ConcurrentHashMap会使用多个锁
+
+
+SynchronizedHashMap：
+会同步整个对象
+每一次的读写操作都需要加锁
+对整个对象加锁会极大降低性能
+这相当于只允许同一时间内至多一个线程操作整个Map，而其他线程必须等待
+它有可能造成资源冲突（某些线程等待较长时间）
+SynchronizedHashMap会返回Iterator，当遍历时进行修改会抛出异常

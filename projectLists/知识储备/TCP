@@ -1,0 +1,33 @@
+问题描述：
+场景：java的client和server，使用socket通行。server使用NIO。
+1.间歇性的出现client向server建立三次握手已经完成，但server的selector没有响应到这连接。
+2.出问题的时间点，会同时有很多连接出现这个问题。
+3.selector没有销毁重建，一直用的都是一个。
+4.程序刚启动的时候必会出现一些，之后会间歇性出现。
+
+分析问题：
+
+正常TCP建连接三次握手过程：
+1.第一步：client发送syn到server发起握手；
+2.第二步：server收到syn后回复syn+ack给client；
+3.第三步:client收到syn+ack后，回复server一个ack表示收到了server的syn+ack（此时client的56911端口的连接已经是established）
+
+从问题的描述来看，有点像TCP
+建连接的时候全连接队列（accept队列）满了，尤其是症状2,4为了证明是这个原因，马上通过netstat -s |egrep "listen"
+去看队列的溢出统计数据：
+      667399 times the listen queue of a socket overflowed
+ 
+反复看了几次之后发现这个overflowed一直在增加，那么可以明确的是server上全连接队列一定溢出了。
+
+接着查看溢出后，os怎么处理：
+#  cat /proc/sys/net/ipv4/tcp_on_overflow
+0
+
+tcp_abort_on_overflow为0表示如果三次握手第三步的时候全连接队列满了那么server扔掉client发过来
+的ack（在server端认为连接还没建立起来）
+
+为了证明客户端应用代码的异常跟全连接队列满有关系，我先把tcp_abort_on_overflow修改成1,1表示第三步的时候如果全连接
+队列满了，server发送一个reset包给client，表示废掉这个握手过程和这个连接（本来在server端这个连接就还没建立起来）
+
+接着测试，这是在客户端异常中可以看到很多connection reset by peer的错误，到此证明客户端错误是这个原因导致的（逻辑
+严谨，快速证明问题的关键点所在）。
