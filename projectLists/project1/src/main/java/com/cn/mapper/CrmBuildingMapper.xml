@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cn.dao.BuildingDao">
+
+	<sql id="selectColumn">
+		t.id as id,
+		t.building_code as buildingCode,
+		t.building_name as buildingName,
+		t.short_name as shortName,
+		t.project_code as projectCode,
+		t.data_source as dataSource,
+		t.active_flag as activeFlag,
+		DATE_FORMAT(t.operate_date,'%Y-%m-%d %H:%i:%s') as operateDate,
+		t.operate_user as operateUser,
+		t.remarks as remarks
+	</sql>
+
+	<sql id="queryCondition">
+		<if test="id != null and id != ''">
+			AND t.id = #{id} 
+		</if>
+		<if test="buildingCode != null and buildingCode != ''">
+			AND t.building_code = #{buildingCode} 
+		</if>
+		<if test="buildingName != null and buildingName != ''">
+			AND t.building_name = #{buildingName} 
+		</if>
+		<if test="shortName != null and shortName != ''">
+			AND t.short_name = #{shortName} 
+		</if>
+		<if test="projectCode != null and projectCode != ''">
+			AND t.project_code = #{projectCode} 
+		</if>
+		<if test="dataSource != null">
+			AND t.data_source = #{dataSource} 
+		</if>
+		<if test="activeFlag != null">
+			AND t.active_flag = #{activeFlag} 
+		</if>
+		<if test="operateDate != null and operateDate != ''">
+			AND t.operate_date = #{operateDate} 
+		</if>
+		<if test="operateUser != null and operateUser != ''">
+			AND t.operate_user = #{operateUser} 
+		</if>
+		<if test="remarks != null and remarks != ''">
+			AND t.remarks = #{remarks} 
+		</if>
+	</sql>
+	
+	
+	<select id="list" parameterType="com.cn.vo.BuildingVo"
+		resultType="com.cn.entity.BuildingEntity">
+		select 
+			<include refid="selectColumn"/>
+		from t_crm_building as t
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<include refid="queryCondition"/>
+		</trim> 
+	</select>
+		
+	<sql id="conditionForPage">
+		<if test="obj.id != null and obj.id != ''">
+			AND t.id = #{obj.id} 
+		</if>
+		<if test="obj.buildingCode != null and obj.buildingCode != ''">
+			AND t.building_code = #{obj.buildingCode} 
+		</if>
+		<if test="obj.buildingName != null and obj.buildingName != ''">
+			AND t.building_name = #{obj.buildingName} 
+		</if>
+		<if test="obj.shortName != null and obj.shortName != ''">
+			AND t.short_name = #{obj.shortName} 
+		</if>
+		<if test="obj.projectCode != null and obj.projectCode != ''">
+			AND t.project_code = #{obj.projectCode} 
+		</if>
+		<if test="obj.dataSource != null">
+			AND t.data_source = #{obj.dataSource} 
+		</if>
+		<if test="obj.activeFlag != null">
+			AND t.active_flag = #{obj.activeFlag} 
+		</if>
+		<if test="obj.operateDate != null and obj.operateDate != ''">
+			AND t.operate_date = #{obj.operateDate} 
+		</if>
+		<if test="obj.operateUser != null and obj.operateUser != ''">
+			AND t.operate_user = #{obj.operateUser} 
+		</if>
+		<if test="obj.remarks != null and obj.remarks != ''">
+			AND t.remarks = #{obj.remarks} 
+		</if>
+	</sql>
+	
+	<select id="listByPage" parameterType="java.util.HashMap"
+		resultType="com.cn.entity.BuildingEntity">
+		select 
+			<include refid="selectColumn"/>
+		from t_crm_building as t
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<include refid="conditionForPage"/>
+		</trim> 
+		limit #{page.offset},#{page.rows}
+	</select>
+	
+	<!-- <select id="listByPageCount" parameterType="java.util.HashMap" resultType="int">
+		select 
+			count(1) as count
+		from t_crm_building as t
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<include refid="conditionForPage"/>
+		</trim>
+	</select> -->
+	 
+	<select id="findById" parameterType="String"
+		resultType="com.cn.entity.BuildingEntity">
+		select 
+			<include refid="selectColumn"/>
+		from t_crm_building as t 
+		where id=#{id} 
+		limit 1
+	</select>
+	
+	<select id="find" parameterType="com.cn.vo.BuildingVo" 
+		resultType="com.cn.entity.BuildingEntity">
+		select 
+			<include refid="selectColumn"/>
+		from t_crm_building as t 
+		where id=#{id} 
+		limit 1
+	</select>
+	
+	<sql id="insertField">
+		id,
+		building_code,
+		building_name,
+		short_name,
+		project_code,
+		data_source,
+		active_flag,
+		operate_date,
+		operate_user,
+		remarks
+	</sql>
+		
+	<insert id="insert" parameterType="com.cn.entity.BuildingEntity">
+		insert into t_crm_building(
+			<include refid="insertField"></include>
+		) values (
+			#{id},
+			#{buildingCode},
+			#{buildingName},
+			#{shortName},
+			#{projectCode},
+			#{dataSource},
+			#{activeFlag},
+			#{operateDate},
+			#{operateUser},
+			#{remarks}
+		)
+	</insert>
+	
+	<!--
+	<insert id="insertBatch" parameterType="java.util.List">
+		insert into t_crm_building(
+			<include refid="insertField"></include>
+		) values 
+		<foreach collection="list" item="item" separator=",">
+		(
+			#{item.id},
+			#{item.buildingCode},
+			#{item.buildingName},
+			#{item.shortName},
+			#{item.projectCode},
+			#{item.dataSource},
+			#{item.activeFlag},
+			#{item.operateDate},
+			#{item.operateUser},
+			#{item.remarks}
+		)
+		</foreach>
+	</insert>
+	-->
+	
+	<update id="update" parameterType="com.cn.entity.BuildingEntity">
+		update t_crm_building 
+		<set>
+			<if test="buildingCode != null">
+				building_code = #{buildingCode},
+			</if>
+			<if test="buildingName != null">
+				building_name = #{buildingName},
+			</if>
+			<if test="shortName != null">
+				short_name = #{shortName},
+			</if>
+			<if test="projectCode != null">
+				project_code = #{projectCode},
+			</if>
+			<if test="dataSource != null">
+				data_source = #{dataSource},
+			</if>
+			<if test="activeFlag != null">
+				active_flag = #{activeFlag},
+			</if>
+			<if test="operateDate != null">
+				operate_date = #{operateDate},
+			</if>
+			<if test="operateUser != null">
+				operate_user = #{operateUser},
+			</if>
+			<if test="remarks != null">
+				remarks = #{remarks},
+			</if>
+		</set>
+		where id=#{id}
+	</update>
+	
+	<delete id="delete" parameterType="com.cn.vo.BuildingVo">
+		delete from t_crm_building 
+		where id=#{id}
+	</delete>
+	
+	<update id="deleteLogic" parameterType="com.cn.vo.BuildingVo">
+		update t_crm_building set active_flag=0 
+		where id=#{id}
+	</update>
+	
+</mapper>
