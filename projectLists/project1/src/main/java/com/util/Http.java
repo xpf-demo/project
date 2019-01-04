@@ -1,23 +1,79 @@
 package com.util;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 public class Http {
 	
+	/**
+	 * 连接url 
+	 * @param context 用户信息
+	 * @param path 地址
+	 * @return
+	 */
+	public static String httpRequest(String path,String params){
+		URL url = null;
+		HttpURLConnection conn = null;
+		InputStream is = null;
+		DataOutputStream dos = null;
+		InputStreamReader inputStreamReader = null;
+		BufferedReader reader;
+		StringBuffer resultBuffer = new StringBuffer();
+        String tempLine = null;
+		
+		StringBuffer paramSbf = new StringBuffer();
+		if(params != null){
+			paramSbf.append(params);
+		}
+		
+		try{
+			url = new URL(path);
+			conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8;");
+			
+			conn.setDoOutput(true);
+			conn.setDoInput(true);
+			conn.setRequestMethod("POST");
+			conn.setUseCaches(false);
+			conn.connect();
+	
+			dos = new DataOutputStream(conn.getOutputStream());
+			dos.write(paramSbf.toString().getBytes("UTF-8"));
+			dos.flush();
+			dos.close();
+			
+			is = conn.getInputStream();
+            inputStreamReader = new InputStreamReader(is,"utf-8");
+            reader = new BufferedReader(inputStreamReader);
+            
+            while ((tempLine = reader.readLine()) != null) {
+                resultBuffer.append(tempLine);
+            }
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			try {
+				if(dos != null)
+					dos.close();
+				if(is != null)
+					is.close();
+				if(conn != null)
+					conn.disconnect();
+			}catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return resultBuffer.toString();
+	}
+	
 	public static void main(String[] args) {
-		/*OkHttpClient client = new OkHttpClient();
 		
-		MediaType mediaType = MediaType.parse("application/json");//格式
-		RequestBody body = RequestBody.create(mediaType, "{\"reserve_id\":\"50a3546fb44e4e3cbb2e2658b42ac9bc\"}");//创建一个body
-		Request request = new Request.Builder()
-				.url("https://fd-test.4009515151.com/fd/api/partner/vanrui/v1/reserves/notify")
-				.post(body)
-				.addHeader("content-type", "application/json")
-				.addHeader("x-appkey", "s0RxKDVBNxvvGoLx1qAR")
-				.addHeader("x-appsecret", "gl6ExpDU3ZOt8hDPPk8g")
-				.addHeader("cache-control", "no-cache")
-				.addHeader("postman-token", "0eb8d527-6f73-5a74-1446-3cc4069f537a")
-				.build();
 		
-		Response response = client.newCall(request).execute();*/
 	}
 	
 
