@@ -756,4 +756,5 @@ Caused by: java.lang.IllegalArgumentException: A ServletContext is required to c
 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:166)
 	... 43 more
 [DEBUG] [2018-11-12 17:20:27][org.springframework.test.context.support.DirtiesContextTestExecutionListener]After test class: context [DefaultTestContext@1554909b testClass = JunitTest, testInstance = [null], testMethod = [null], testException = [null], mergedContextConfiguration = [MergedContextConfiguration@6cd8737 testClass = JunitTest, locations = '{classpath*:spring-mvc.xml, classpath*:spring-mybatis.xml}', classes = '{}', contextInitializerClasses = '[]', activeProfiles = '{}', contextLoader = 'org.springframework.test.context.support.DelegatingSmartContextLoader', parent = [null]]], dirtiesContext [false].
+  [ERROR] [2019-06-17 11:28:52][redis.RedisUtil]获取jedis出错: redis.clients.jedis.exceptions.JedisConnectionException: Could not get a resource from the pool
   
