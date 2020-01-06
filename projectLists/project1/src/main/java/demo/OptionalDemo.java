@@ -5,10 +5,10 @@ import java.util.Optional;
 public class OptionalDemo {
 	
 	public static void main(String[] args) {
-		Demo demo = null;
+		Demo demo = new Demo();
 		Optional<Demo> op = Optional.ofNullable(demo);
-		System.out.println(op.get());
 		System.out.println(op.isPresent());
+		System.out.println(op.get().getName());
 	}
 
 }
