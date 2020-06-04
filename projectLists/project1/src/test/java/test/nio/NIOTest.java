@@ -117,7 +117,7 @@ public class NIOTest {
 		SocketChannel sChannel = null;
 		try {
 			//1.获取通道，默认就是阻塞
-			sChannel = SocketChannel.open();
+			sChannel = SocketChannel.open(new InetSocketAddress("127.0.0.1", 9898));
 			//1.2将阻塞的套接字变为非阻塞
 			sChannel.configureBlocking(false);
 			//2.创建指定大小的缓冲区
@@ -126,14 +126,13 @@ public class NIOTest {
 			Scanner scan = new Scanner(System.in);
 			while(scan.hasNext()) {
 				String str = scan.next();
-				buf.put(new Date().toString().getBytes());
+				buf.put((new Date().toString()+":"+str).getBytes());
 				//将缓冲区变为读模式
 				buf.flip();
 				//4.将缓冲区的数据写入到sChannel当中
 				sChannel.write(buf);
 				buf.clear();
 			}
-			
 			
 		} catch (IOException e) {
 			e.printStackTrace();
